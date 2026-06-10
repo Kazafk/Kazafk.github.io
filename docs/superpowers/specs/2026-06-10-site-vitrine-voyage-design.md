@@ -34,7 +34,8 @@ dans `docs/design-reference/stitch-design.html`).
 2. **Une étape par projet** — sections plein écran alternées sur fond illustré :
    numéro d'étape, nom du projet, description, badge langage, bouton
    « Visiter le projet → » vers `https://kazafk.github.io/<repo>/`.
-   Les 3 illustrations tournent en boucle si plus de 3 projets.
+   Le hero utilise `scene-ciel.jpg` ; les étapes alternent `scene-profondeurs.jpg`
+   et `scene-abysses.jpg` en boucle, quelle que soit la quantité de projets.
 3. **Footer « Fin du voyage »** — lien vers le profil GitHub, bouton
    « Remonter à la surface » (scroll vers le haut).
 
