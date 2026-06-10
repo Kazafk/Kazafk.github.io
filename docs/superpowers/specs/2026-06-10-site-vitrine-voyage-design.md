@@ -36,7 +36,8 @@ dans `docs/design-reference/stitch-design.html`).
    « Visiter le projet → » vers `https://kazafk.github.io/<repo>/`.
    Le hero utilise `scene-ciel.jpg` ; les étapes alternent `scene-profondeurs.jpg`
    et `scene-abysses.jpg` en boucle, quelle que soit la quantité de projets.
-3. **Footer « Fin du voyage »** — lien vers le profil GitHub, bouton
+3. **Footer « Fin du voyage »** — lien vers le profil GitHub uniquement (pas de
+   lien mail ni Twitter, contrairement au HTML de référence Stitch), bouton
    « Remonter à la surface » (scroll vers le haut).
 
 ## Expérience (validée)
