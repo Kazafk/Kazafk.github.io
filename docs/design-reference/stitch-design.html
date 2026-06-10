@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+
+<html class="dark scroll-smooth" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KAZAFK - Voyage</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600&amp;family=Playfair+Display:wght@600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-secondary-fixed-variant": "#005049",
+                      "inverse-on-surface": "#093732",
+                      "tertiary-fixed-dim": "#e8bf98",
+                      "error-container": "#93000a",
+                      "on-secondary": "#003732",
+                      "background": "#001714",
+                      "surface-dim": "#001714",
+                      "surface": "#001714",
+                      "surface-bright": "#15403b",
+                      "primary-fixed-dim": "#e0c565",
+                      "primary": "#ffedb8",
+                      "on-tertiary-fixed": "#2c1701",
+                      "on-surface-variant": "#cec6b2",
+                      "outline": "#97907e",
+                      "on-tertiary-fixed-variant": "#5d4123",
+                      "on-error": "#690005",
+                      "surface-tint": "#e0c565",
+                      "surface-container-high": "#01302b",
+                      "on-error-container": "#ffdad6",
+                      "surface-container-low": "#00201d",
+                      "outline-variant": "#4c4637",
+                      "on-tertiary": "#442b0f",
+                      "surface-container": "#002521",
+                      "tertiary": "#ffead9",
+                      "surface-container-lowest": "#00110f",
+                      "tertiary-container": "#f4caa3",
+                      "inverse-surface": "#bfebe4",
+                      "on-secondary-fixed": "#00201c",
+                      "secondary": "#61daca",
+                      "on-secondary-container": "#00302b",
+                      "surface-container-highest": "#0f3b36",
+                      "on-tertiary-container": "#725434",
+                      "primary-fixed": "#fee17e",
+                      "surface-variant": "#0f3b36",
+                      "on-background": "#bfebe4",
+                      "primary-container": "#ecd06f",
+                      "secondary-container": "#0ea294",
+                      "on-surface": "#bfebe4",
+                      "tertiary-fixed": "#ffdcbd",
+                      "inverse-primary": "#715d00",
+                      "on-primary": "#3b2f00",
+                      "error": "#ffb4ab",
+                      "on-primary-fixed-variant": "#554500",
+                      "secondary-fixed": "#7ff6e6",
+                      "secondary-fixed-dim": "#61daca",
+                      "on-primary-container": "#6b5800",
+                      "on-primary-fixed": "#231b00"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "gutter": "32px",
+                      "container-max": "1440px",
+                      "margin-edge": "5vw",
+                      "section-gap": "20vh",
+                      "unit": "8px"
+              },
+              "fontFamily": {
+                      "display-lg-mobile": [
+                              "Playfair Display"
+                      ],
+                      "body-lg": [
+                              "Hanken Grotesk"
+                      ],
+                      "headline-md": [
+                              "Playfair Display"
+                      ],
+                      "label-caps": [
+                              "Hanken Grotesk"
+                      ],
+                      "display-xl": [
+                              "Playfair Display"
+                      ],
+                      "display-lg": [
+                              "Playfair Display"
+                      ],
+                      "body-md": [
+                              "Hanken Grotesk"
+                      ]
+              },
+              "fontSize": {
+                      "display-lg-mobile": [
+                              "48px",
+                              {
+                                      "lineHeight": "115%",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-lg": [
+                              "20px",
+                              {
+                                      "lineHeight": "160%",
+                                      "letterSpacing": "0.01em",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-md": [
+                              "40px",
+                              {
+                                      "lineHeight": "120%",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-caps": [
+                              "12px",
+                              {
+                                      "lineHeight": "100%",
+                                      "letterSpacing": "0.2em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-xl": [
+                              "120px",
+                              {
+                                      "lineHeight": "110%",
+                                      "letterSpacing": "-0.04em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "display-lg": [
+                              "80px",
+                              {
+                                      "lineHeight": "110%",
+                                      "letterSpacing": "-0.03em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "160%",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .fill-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+        
+        .glass-card {
+            background: rgba(97, 218, 202, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(151, 144, 126, 0.2);
+        }
+
+        .float-anim {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(1deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+
+        .liquid-hover {
+            position: relative;
+            overflow: hidden;
+            transition: color 0.4s ease;
+        }
+        .liquid-hover::before {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: theme('colors.secondary');
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: -1;
+            border-radius: theme('borderRadius.full');
+        }
+        .liquid-hover:hover::before {
+            transform: translateY(-100%);
+        }
+        .liquid-hover:hover {
+            color: theme('colors.on-secondary');
+        }
+
+        .parallax-bg {
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        /* Custom scrollbar to match theme */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: theme('colors.background');
+        }
+        ::-webkit-scrollbar-thumb {
+            background: theme('colors.surface-variant');
+            border-radius: theme('borderRadius.full');
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: theme('colors.outline');
+        }
+
+        /* Organic mask for images */
+        .organic-mask {
+            mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+            -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-lg overflow-x-hidden selection:bg-secondary selection:text-on-secondary">
+<!-- TopNavBar -->
+<nav aria-label="Main Navigation" class="fixed top-0 w-full flex justify-between items-center px-margin-edge py-unit z-50 bg-transparent mix-blend-difference hidden md:flex">
+<div class="font-display-lg text-body-lg tracking-tighter text-primary">
+            KAZAFK
+        </div>
+<div class="flex gap-gutter font-label-caps text-label-caps">
+<a class="text-primary font-bold border-b border-primary pb-1 hover:text-secondary transition-colors duration-500" href="#ciel">Ciel</a>
+<a class="text-on-surface-variant hover:text-secondary transition-colors duration-500" href="#lueur">Lueur</a>
+<a class="text-on-surface-variant hover:text-secondary transition-colors duration-500" href="#profondeur">Profondeur</a>
+<a class="text-on-surface-variant hover:text-secondary transition-colors duration-500" href="#abysses">Abysses</a>
+</div>
+<div>
+<button class="liquid-hover px-6 py-3 rounded-full border border-primary text-primary font-label-caps text-label-caps uppercase tracking-widest">Connect</button>
+</div>
+</nav>
+<!-- SideNavBar (Mobile/Alternative Navigation) -->
+<aside aria-label="Step Navigation" class="fixed right-8 top-1/2 -translate-y-1/2 h-auto w-12 flex flex-col space-y-8 items-center z-50 bg-transparent hidden md:flex">
+<a aria-label="Ciel" class="group relative flex items-center justify-center w-4 h-4 rounded-full bg-secondary ring-4 ring-secondary/20 scale-125 transition-all duration-700" href="#ciel">
+<span class="absolute right-8 opacity-0 group-hover:opacity-100 transition-opacity font-label-caps text-label-caps text-secondary whitespace-nowrap">Ciel</span>
+</a>
+<a aria-label="Lueur" class="group relative flex items-center justify-center w-2 h-2 rounded-full bg-outline-variant scale-100 hover:scale-150 hover:bg-secondary transition-transform" href="#lueur">
+<span class="absolute right-8 opacity-0 group-hover:opacity-100 transition-opacity font-label-caps text-label-caps text-secondary whitespace-nowrap">Lueur</span>
+</a>
+<a aria-label="Profondeur" class="group relative flex items-center justify-center w-2 h-2 rounded-full bg-outline-variant scale-100 hover:scale-150 hover:bg-secondary transition-transform" href="#profondeur">
+<span class="absolute right-8 opacity-0 group-hover:opacity-100 transition-opacity font-label-caps text-label-caps text-secondary whitespace-nowrap">Profondeur</span>
+</a>
+<a aria-label="Abysses" class="group relative flex items-center justify-center w-2 h-2 rounded-full bg-outline-variant scale-100 hover:scale-150 hover:bg-secondary transition-transform" href="#abysses">
+<span class="absolute right-8 opacity-0 group-hover:opacity-100 transition-opacity font-label-caps text-label-caps text-secondary whitespace-nowrap">Abysses</span>
+</a>
+</aside>
+<main>
+<!-- Section 1 (HERO) - Ciel -->
+<section class="relative min-h-[100vh] flex items-center justify-center px-margin-edge parallax-bg" id="ciel" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBwBL6WrNkq906O5seEQDRMQyNeFvBNCE5jfoBVqOc8KwJKL-xeLh7ioeGVnZTGJ5IvYsIWvx3wFCO5U-hiIMV5yci2XSayz2eX5R36OGzaQu0ock2DGeDqsQTaq6ouoCJv4Shpri7rnhCblbzlSFDlF98tixBAbVowOdBqxspPdIkEN1JfsbVJwNef7kqwQUEitcz3zRkY9OvjmEUCQuCIZwQj0QR62AA9hhb4vh5BfuQz9jSHwTvlhHLerTVCFEGpiyl7p3lBck6A=s2048');">
+<!-- Atmospheric Fog overlay -->
+<div class="absolute inset-0 bg-gradient-to-b from-transparent via-background/20 to-surface-container-high/90 pointer-events-none"></div>
+<div class="relative z-10 text-center flex flex-col items-center">
+<h1 class="font-display-xl text-display-xl md:text-[150px] text-primary-container tracking-tighter mix-blend-screen opacity-90 drop-shadow-2xl">
+                    KAZAFK
+                </h1>
+<p class="font-headline-md text-headline-md text-tertiary-fixed mt-8 max-w-2xl font-light">
+                    Un voyage à travers mes projets
+                </p>
+<div class="mt-20 animate-bounce">
+<span class="material-symbols-outlined text-primary text-4xl font-light">keyboard_arrow_down</span>
+</div>
+</div>
+</section>
+<!-- Section 2 (ÉTAPE 01) - Lueur -->
+<section class="relative min-h-[100vh] py-section-gap px-margin-edge bg-gradient-to-b from-surface-container-high to-surface-container flex items-center" id="lueur">
+<div class="max-w-container-max mx-auto w-full grid grid-cols-1 md:grid-cols-12 gap-gutter items-center">
+<div class="md:col-span-5 md:col-start-2 flex flex-col space-y-6 z-10">
+<div class="flex items-center space-x-4">
+<span class="font-label-caps text-label-caps text-secondary tracking-[0.3em]">ÉTAPE 01</span>
+<div class="h-[1px] w-12 bg-secondary/50"></div>
+</div>
+<h2 class="font-display-lg text-display-lg text-inverse-surface">sca-water-map</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-lg">
+                        Une exploration interactive des courants fluviaux. Cartographie dynamique et rendu en temps réel des données aquatiques.
+                    </p>
+<div class="pt-4">
+<span class="inline-block px-4 py-2 border border-outline rounded-full font-label-caps text-label-caps text-primary-fixed-dim">
+                            JavaScript
+                        </span>
+</div>
+</div>
+<div class="md:col-span-6 relative mt-12 md:mt-0 float-anim">
+<div class="glass-card p-4 rounded-xl shadow-2xl relative overflow-hidden group">
+<div class="absolute inset-0 bg-secondary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+<div class="aspect-video bg-surface-container-lowest rounded-lg overflow-hidden relative">
+<!-- Placeholder for actual project visual or interactive element, using an organic abstract representation for now -->
+<div class="absolute inset-0 bg-gradient-to-br from-secondary/20 to-surface-variant organic-mask"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 3 (ÉTAPE 02) - Profondeur -->
+<section class="relative min-h-[100vh] py-section-gap px-margin-edge flex items-center overflow-hidden" id="profondeur">
+<!-- Background Image -->
+<div class="absolute inset-0 z-0">
+<img alt="A painterly, artistic underwater illustration of turquoise depths." class="w-full h-full object-cover opacity-30 mix-blend-luminosity" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKw5uoRzszncSq-H2MyljmsT3XX4hsxkJ4h6gzMyXn1K7Fjc0Ofa0PZ5pc11owi11RuCiw1WOkwJ_m6GQTQepFvfsrUjVVnZ1PDIdouQe3D0aLWke2oMwnIhAX1frkqwU18Gs-KgRfS8TpjKzKdCxP2WdtNJt-JQBKAK419fSIleFiPYvhU_HMORgpwuQEOEnX84KXtALI5ECURM2h1XSc3mYdbFKxwXqIwmEZuwc0b3Z9wAAGxfaFK0WU71Yrzjg1Zy89ZvBfCoWZ=s2048"/>
+<div class="absolute inset-0 bg-gradient-to-b from-surface-container to-surface-container-lowest/90"></div>
+</div>
+<div class="max-w-container-max mx-auto w-full grid grid-cols-1 md:grid-cols-12 gap-gutter items-center relative z-10">
+<div class="md:col-span-6 float-anim order-2 md:order-1 mt-12 md:mt-0">
+<div class="glass-card p-6 rounded-2xl shadow-2xl group cursor-pointer hover:border-secondary/50 transition-colors duration-500">
+<div class="aspect-square md:aspect-video rounded-xl overflow-hidden relative">
+<img alt="A painterly, artistic underwater illustration of turquoise depths." class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-1000" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKw5uoRzszncSq-H2MyljmsT3XX4hsxkJ4h6gzMyXn1K7Fjc0Ofa0PZ5pc11owi11RuCiw1WOkwJ_m6GQTQepFvfsrUjVVnZ1PDIdouQe3D0aLWke2oMwnIhAX1frkqwU18Gs-KgRfS8TpjKzKdCxP2WdtNJt-JQBKAK419fSIleFiPYvhU_HMORgpwuQEOEnX84KXtALI5ECURM2h1XSc3mYdbFKxwXqIwmEZuwc0b3Z9wAAGxfaFK0WU71Yrzjg1Zy89ZvBfCoWZ=s2048"/>
+</div>
+</div>
+</div>
+<div class="md:col-span-5 md:col-start-8 flex flex-col space-y-6 order-1 md:order-2">
+<div class="flex items-center space-x-4">
+<span class="font-label-caps text-label-caps text-secondary tracking-[0.3em]">ÉTAPE 02</span>
+<div class="h-[1px] w-12 bg-secondary/50"></div>
+</div>
+<h2 class="font-display-lg text-display-lg text-inverse-surface">mmia4</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-lg">
+                        Structure et sémantique abyssale. Une fondation solide pour des expériences web immersives, où chaque balise raconte une histoire.
+                    </p>
+<div class="pt-4">
+<span class="inline-block px-4 py-2 border border-outline rounded-full font-label-caps text-label-caps text-primary-fixed-dim">
+                            HTML
+                        </span>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 4 (ÉTAPE 03) - Abysses -->
+<section class="relative min-h-[100vh] py-section-gap px-margin-edge flex items-center bg-surface-container-lowest" id="abysses">
+<!-- Background Image -->
+<div class="absolute inset-0 z-0">
+<img alt="A painterly, mysterious digital illustration of the deep sea abysses." class="w-full h-full object-cover opacity-20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAjitAXkAhYAEBlwxBZAjyw-eZAhFCvbUV-Kg5x7XFq8RSz1fjQVIz5AoIAR5Sye0diHPMXWBCtwzO_oek3ZAwLS3rG6Zo59yAkZCcA8Rv7mKJ9F4_QJ4O8SFQ4egWsGu0TkV9hxlReenXbBPU9UjIPQKFCck1YWHEDh8n-L8TqX3gOf1DjxzKMUJyhnOWePGBPmN-slSvfkavyb00ch0-NR81Bu-_ri-7XLcE-rtTVHXqz5fCdaIU3cbrYxhReOmbB28jAYf3ZzQWR=s2048"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-surface-container-lowest/80"></div>
+</div>
+<div class="max-w-container-max mx-auto w-full flex flex-col items-center justify-center relative z-10 text-center">
+<div class="flex items-center space-x-4 mb-8">
+<div class="h-[1px] w-8 bg-secondary/50"></div>
+<span class="font-label-caps text-label-caps text-secondary tracking-[0.3em]">ÉTAPE 03</span>
+<div class="h-[1px] w-8 bg-secondary/50"></div>
+</div>
+<h2 class="font-display-xl text-display-xl text-primary md:text-[100px] leading-none mb-12">animated-<br/>octo-happiness</h2>
+<div class="glass-card p-2 rounded-3xl max-w-3xl w-full float-anim mb-12">
+<div class="aspect-video rounded-2xl overflow-hidden relative group">
+<img alt="A painterly, mysterious digital illustration of the deep sea abysses." class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAjitAXkAhYAEBlwxBZAjyw-eZAhFCvbUV-Kg5x7XFq8RSz1fjQVIz5AoIAR5Sye0diHPMXWBCtwzO_oek3ZAwLS3rG6Zo59yAkZCcA8Rv7mKJ9F4_QJ4O8SFQ4egWsGu0TkV9hxlReenXbBPU9UjIPQKFCck1YWHEDh8n-L8TqX3gOf1DjxzKMUJyhnOWePGBPmN-slSvfkavyb00ch0-NR81Bu-_ri-7XLcE-rtTVHXqz5fCdaIU3cbrYxhReOmbB28jAYf3ZzQWR=s2048"/>
+<div class="absolute inset-0 bg-background/40 group-hover:bg-transparent transition-colors duration-700"></div>
+</div>
+</div>
+<div class="flex flex-col items-center space-y-6">
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
+                        Logique tentaculaire et typage strict. Une danse complexe de données dans l'obscurité, illuminée par la bioluminescence du code.
+                    </p>
+<span class="inline-block px-4 py-2 border border-outline rounded-full font-label-caps text-label-caps text-secondary-fixed">
+                        TypeScript
+                    </span>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-section-gap flex flex-col items-center justify-center px-margin-edge text-center bg-surface-container-lowest bg-gradient-to-t from-background to-transparent fluid-parallax-scroll relative z-10">
+<h3 class="font-display-lg text-display-lg text-primary mb-4 text-4xl md:text-6xl">Fin du voyage</h3>
+<p class="font-body-md text-body-md text-tertiary-fixed mb-12">
+            © 2024 KAZAFK — Into the Abysses
+        </p>
+<div class="flex space-x-8 mb-16 font-label-caps text-label-caps">
+<a class="text-on-surface-variant hover:text-secondary transition-all duration-300" href="#">Twitter</a>
+<a class="text-primary hover:text-secondary transition-all duration-300 border-b border-primary/30 pb-1" href="#">GitHub</a>
+<a class="text-on-surface-variant hover:text-secondary transition-all duration-300" href="#">Email</a>
+</div>
+<button class="group flex flex-col items-center space-y-4 liquid-hover px-8 py-4 rounded-full border border-outline-variant text-on-surface-variant" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+<span class="material-symbols-outlined group-hover:-translate-y-2 transition-transform duration-300">arrow_upward</span>
+<span class="font-label-caps text-label-caps">Remonter à la surface</span>
+</button>
+</footer>
+<script>
+        // Simple Intersection Observer for scroll animations (blooming dots)
+        const sections = document.querySelectorAll('section');
+        const navDots = document.querySelectorAll('aside a');
+
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.5
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.getAttribute('id');
+                    
+                    // Update dots
+                    navDots.forEach(dot => {
+                        const href = dot.getAttribute('href').substring(1);
+                        if (href === id) {
+                            dot.className = 'group relative flex items-center justify-center w-4 h-4 rounded-full bg-secondary ring-4 ring-secondary/20 scale-125 transition-all duration-700';
+                        } else {
+                            dot.className = 'group relative flex items-center justify-center w-2 h-2 rounded-full bg-outline-variant scale-100 hover:scale-150 hover:bg-secondary transition-transform';
+                        }
+                    });
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => observer.observe(section));
+    </script>
+</body></html>
