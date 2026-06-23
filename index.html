@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kazafk — Relevé topographique des projets</title>
+<meta name="description" content="Portfolio GitHub de Kazafk — projets open-source, expériences interactives & IA. Esthétique cartographique, sable & pierre.">
+<meta property="og:title" content="Kazafk — Relevé topographique des projets">
+<meta property="og:description" content="Projets open-source, expériences interactives & IA.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#B5733F">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  /* — Sable & pierre — */
+  --paper:      #E7CDA6;   /* sable clair du fond */
+  --paper-deep: #DBB988;   /* sable plus dense */
+  --sand-line:  #C79A6A;   /* lignes topo claires */
+  --terracotta: #B5532A;   /* accent terre cuite */
+  --terra-soft: #C2603A;
+  --rust:       #8E3B1C;   /* terre brûlée */
+  --stone:      #5A3A23;   /* pierre / texte secondaire */
+  --ink:        #3A2415;   /* encre brun foncé, texte */
+  --glacier:    #6F8C86;   /* accent froid (eau/glacier) */
+  --shadow:     rgba(58,36,21,0.18);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background:
+    radial-gradient(120% 90% at 70% -10%, #EBD4AE 0%, var(--paper) 42%, var(--paper-deep) 100%);
+  color: var(--ink);
+  font-family: 'Fraunces', Georgia, serif;
+  overflow-x: hidden;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Grain papier très léger */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  opacity: 0.5;
+  z-index: 9999;
+}
+
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+/* ── HERO ── */
+#hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 80px 60px;
+  overflow: hidden;
+  border-bottom: 1.5px solid var(--sand-line);
+}
+
+#topo-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* cadre cartographique fin sur le hero */
+.hero-frame {
+  position: absolute;
+  inset: 22px;
+  border: 1px solid rgba(90,58,35,0.30);
+  z-index: 1;
+  pointer-events: none;
+}
+.hero-frame::before,
+.hero-frame::after {
+  content: '';
+  position: absolute;
+  width: 14px; height: 14px;
+  border: 1px solid var(--rust);
+}
+.hero-frame::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+.hero-frame::after  { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 720px;
+}
+
+.hero-coord {
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--rust);
+  margin-bottom: 26px;
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  align-items: center;
+  font-family: 'JetBrains Mono', monospace;
+}
+.hero-coord::before {
+  content: '✦';
+  color: var(--terracotta);
+  letter-spacing: 0;
+}
+.summit-cycle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: opacity 0.35s ease;
+}
+.summit-name { color: var(--terracotta); font-weight: 700; }
+.summit-sep  { color: var(--sand-line); }
+
+.hero-name {
+  font-size: clamp(3.4rem, 9vw, 7rem);
+  font-weight: 800;
+  font-optical-sizing: auto;
+  color: var(--ink);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  margin-bottom: 20px;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.25);
+}
+.hero-name .accent { color: var(--terracotta); }
+
+.hero-tagline {
+  font-size: clamp(1.05rem, 2.2vw, 1.4rem);
+  font-weight: 400;
+  color: var(--stone);
+  line-height: 1.55;
+  max-width: 560px;
+  margin-bottom: 38px;
+}
+.hero-tagline em { color: var(--rust); font-style: italic; }
+
+.hero-stats {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 42px;
+  flex-wrap: wrap;
+}
+.hero-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 20px 12px 16px;
+  background: rgba(231,205,166,0.55);
+  border: 1px solid var(--sand-line);
+  border-left: 3px solid var(--terracotta);
+  backdrop-filter: blur(2px);
+}
+.hero-stat .num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1;
+}
+.hero-stat .lbl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.56rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--stone);
+}
+
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 30px;
+  border: 1.5px solid var(--ink);
+  color: var(--paper);
+  background: var(--ink);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.22s, color 0.22s, transform 0.22s;
+}
+.hero-cta:hover {
+  background: var(--terracotta);
+  border-color: var(--terracotta);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+/* Légende / échelle façon carte, en bas du hero */
+.hero-legend {
+  position: absolute;
+  bottom: 30px;
+  right: 40px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.56rem;
+  letter-spacing: 0.12em;
+  color: var(--stone);
+  text-transform: uppercase;
+}
+.scale-bar {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border: 1px solid var(--stone);
+}
+.scale-bar span { width: 26px; height: 8px; }
+.scale-bar span:nth-child(odd)  { background: var(--ink); }
+.scale-bar span:nth-child(even) { background: transparent; }
+
+/* ── PROJECTS ── */
+#projects {
+  position: relative;
+  z-index: 2;
+  padding: 72px 60px 90px;
+}
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-bottom: 44px;
+  padding-bottom: 18px;
+  border-bottom: 1.5px solid var(--sand-line);
+}
+.section-title {
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+.section-title .idx {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--rust);
+  vertical-align: super;
+  margin-right: 10px;
+}
+.section-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--stone);
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px;
+}
+
+/* ── CARD (tuile de relevé) ── */
+.card-wrap { perspective: 900px; }
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 234px;
+  background:
+    linear-gradient(180deg, rgba(255,248,237,0.55), rgba(219,185,136,0.25)),
+    var(--paper);
+  border: 1.5px solid var(--sand-line);
+  box-shadow: 0 2px 0 var(--sand-line), 0 14px 26px -18px var(--shadow);
+  overflow: hidden;
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: box-shadow 0.25s;
+}
+.card:hover { box-shadow: 0 2px 0 var(--terra-soft), 0 22px 40px -20px var(--shadow); }
+
+/* mini contours décoratifs en coin */
+.card::before {
+  content: '';
+  position: absolute;
+  right: -60px; top: -60px;
+  width: 180px; height: 180px;
+  background:
+    radial-gradient(circle, transparent 28%, rgba(143,59,28,0.10) 29%, transparent 30%),
+    radial-gradient(circle, transparent 40%, rgba(143,59,28,0.09) 41%, transparent 42%),
+    radial-gradient(circle, transparent 52%, rgba(143,59,28,0.08) 53%, transparent 54%),
+    radial-gradient(circle, transparent 64%, rgba(143,59,28,0.07) 65%, transparent 66%);
+  pointer-events: none;
+  transform: translateZ(8px);
+}
+
+.card-stripe {
+  height: 5px;
+  width: 100%;
+  flex-shrink: 0;
+  transform: translateZ(0);
+}
+
+.card-body {
+  padding: 18px 20px 16px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  transform-style: preserve-3d;
+}
+
+.card-plot {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.54rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--rust);
+  margin-bottom: 8px;
+  transform: translateZ(18px);
+}
+
+.card-title {
+  font-size: 1.18rem;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  margin-bottom: 9px;
+  transform: translateZ(34px);
+  word-break: break-word;
+}
+
+.card-desc {
+  font-size: 0.84rem;
+  color: var(--stone);
+  line-height: 1.55;
+  flex: 1;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  transform: translateZ(16px);
+}
+.card-desc.empty { color: var(--sand-line); font-style: italic; }
+
+.card-topics {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  transform: translateZ(12px);
+}
+.topic-chip {
+  font-family: 'JetBrains Mono', monospace;
+  padding: 2px 8px;
+  border: 1px solid var(--sand-line);
+  color: var(--stone);
+  font-size: 0.54rem;
+  letter-spacing: 0.08em;
+  background: rgba(255,248,237,0.4);
+}
+
+.card-meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--sand-line);
+  flex-wrap: wrap;
+  transform: translateZ(20px);
+}
+.lang-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+}
+.lang-dot { width: 9px; height: 9px; border-radius: 50%; box-shadow: 0 0 0 1px rgba(58,36,21,0.25); }
+
+.card-stat {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--stone);
+  letter-spacing: 0.03em;
+}
+.card-stat b { color: var(--ink); font-weight: 700; }
+
+.card-links {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+  transform: translateZ(24px);
+}
+.card-link {
+  font-family: 'JetBrains Mono', monospace;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s;
+}
+.card-link.primary { background: var(--ink); color: var(--paper); border: 1.5px solid var(--ink); }
+.card-link.primary:hover { background: var(--terracotta); border-color: var(--terracotta); color: #fff; }
+.card-link.ghost { color: var(--rust); border: 1.5px solid var(--sand-line); background: transparent; }
+.card-link.ghost:hover { border-color: var(--rust); background: rgba(142,59,28,0.08); }
+
+.card-glare {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transform: translateZ(40px);
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+
+.empty-msg {
+  grid-column: 1 / -1;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--stone);
+  padding: 40px;
+  text-align: center;
+  border: 1px dashed var(--sand-line);
+}
+
+/* ── FOOTER ── */
+#footer {
+  position: relative;
+  z-index: 2;
+  border-top: 1.5px solid var(--sand-line);
+  padding: 26px 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  color: var(--stone);
+}
+.footer-link { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--terra-soft); transition: color 0.2s; }
+.footer-link:hover { color: var(--terracotta); }
+
+@media (max-width: 760px) {
+  #hero     { padding: 64px 24px; }
+  #projects { padding: 52px 24px 70px; }
+  #footer   { padding: 22px 24px; }
+  .cards-grid { grid-template-columns: 1fr; }
+  .hero-legend { display: none; }
+}
+</style>
+</head>
+<body>
+
+<section id="hero">
+  <canvas id="topo-canvas"></canvas>
+  <div class="hero-frame"></div>
+
+  <div class="hero-content">
+    <div class="hero-coord">
+      <span>FEUILLE Nº 01 — KAZAFK</span>
+      <span id="summit-cycle" class="summit-cycle">
+        <span id="summit-name" class="summit-name">MONT BLANC</span>
+        <span class="summit-sep">·</span>
+        <span id="summit-coord">45.83°N · 6.86°E</span>
+        <span class="summit-sep">·</span>
+        <span id="summit-alt">4 806 m</span>
+      </span>
+    </div>
+    <h1 class="hero-name">Kaz<span class="accent">afk</span></h1>
+    <p class="hero-tagline">
+      Développeur · expériences interactives &amp; <em>IA</em>.<br>
+      Un relevé de mes projets open-source — tracés, contours&nbsp;et reliefs.
+    </p>
+    <div class="hero-stats">
+      <div class="hero-stat"><span class="num" id="stat-repos">—</span><span class="lbl">Repos publics</span></div>
+      <div class="hero-stat"><span class="num" id="stat-stars">—</span><span class="lbl">Stars cumulées</span></div>
+      <div class="hero-stat"><span class="num" id="stat-langs">—</span><span class="lbl">Langages</span></div>
+    </div>
+    <a class="hero-cta" href="#projects">Explorer le relevé&nbsp;↓</a>
+  </div>
+
+  <div class="hero-legend">
+    <span>Échelle&nbsp;·&nbsp;Équidistance 50 m</span>
+    <div class="scale-bar"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    <span>0&nbsp;———&nbsp;1&nbsp;km</span>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="section-head">
+    <h2 class="section-title"><span class="idx">§ 01</span>Relevé des projets</h2>
+    <span class="section-sub" id="projects-sub">Chargement du levé…</span>
+  </div>
+  <div id="cards-grid" class="cards-grid"></div>
+</section>
+
+<footer id="footer">
+  <span>&#9650; <a href="https://github.com/Kazafk" target="_blank" rel="noopener noreferrer" class="footer-link">github.com/Kazafk</a></span>
+  <span>Tracé au canvas · courbes de niveau &amp; API GitHub · MMXXVI</span>
+</footer>
+
+<script>
+/* ================================================================
+   FOND TOPOGRAPHIQUE ANIMÉ — champ scalaire + marching squares
+   ================================================================ */
+(function topo() {
+  const canvas = document.getElementById('topo-canvas');
+  const ctx = canvas.getContext('2d');
+  const hero = document.getElementById('hero');
+
+  let W = 0, H = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const CELL = 26;          // taille d'une cellule de grille (px)
+  let cols = 0, rows = 0;
+  let field = [];           // valeurs du champ
+
+  // Sommets mobiles (collines) qui dérivent lentement
+  const PEAKS = [];
+  function seedPeaks() {
+    PEAKS.length = 0;
+    const n = 5;
+    for (let i = 0; i < n; i++) {
+      PEAKS.push({
+        x: Math.random(), y: Math.random(),
+        amp: 0.6 + Math.random() * 0.9,
+        r:  0.16 + Math.random() * 0.22,
+        sx: (Math.random() - 0.5) * 0.018,
+        sy: (Math.random() - 0.5) * 0.018,
+        ph: Math.random() * Math.PI * 2,
+      });
+    }
+  }
+
+  function resize() {
+    W = hero.offsetWidth; H = hero.offsetHeight;
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    cols = Math.ceil(W / CELL) + 1;
+    rows = Math.ceil(H / CELL) + 1;
+  }
+
+  // Palette terre cuite / pierre pour les contours
+  const ROCK = '142,59,28';     // --rust
+  const STONE = '90,58,35';     // --stone
+
+  // Échelle altimétrique : l'équidistance entre courbes (0.12 en unité de
+  // champ) vaut 50 m → toute altitude affichée est calculée depuis le champ.
+  const ISO_STEP = 0.12;
+  const M_PER_UNIT = 50 / ISO_STEP;   // ≈ 416,7 m par unité de champ
+  let curT = 0;
+
+  // Valeur continue du champ en un point normalisé (même formule que la grille,
+  // donc parfaitement cohérente avec les courbes de niveau tracées).
+  function fieldValue(nx, ny) {
+    let v = 0;
+    for (const p of PEAKS) {
+      const dx = nx - p.cx, dy = ny - p.cy;
+      v += p.amp * Math.exp(-(dx * dx + dy * dy) / (2 * p.r * p.r));
+    }
+    v += 0.18 * Math.sin(nx * 7 + curT * 0.4) * Math.cos(ny * 6 - curT * 0.3);
+    return v;
+  }
+
+  // Altitude (m) correspondant à une valeur de champ.
+  function fieldToAlt(v) { return Math.round(v * M_PER_UNIT / 10) * 10; }
+
+  function computeField(t) {
+    curT = t;
+    for (const p of PEAKS) {
+      p.cx = 0.5 + (p.x - 0.5) + Math.sin(t * 0.3 + p.ph) * 0.06 + p.sx * t * 6;
+      p.cy = 0.5 + (p.y - 0.5) + Math.cos(t * 0.26 + p.ph) * 0.06 + p.sy * t * 6;
+      // garder dans le cadre en repliant
+      p.cx = ((p.cx % 1) + 1) % 1;
+      p.cy = ((p.cy % 1) + 1) % 1;
+    }
+    field = new Array(cols * rows);
+    for (let j = 0; j < rows; j++) {
+      for (let i = 0; i < cols; i++) {
+        field[j * cols + i] = fieldValue(i / (cols - 1), j / (rows - 1));
+      }
+    }
+  }
+
+  // Interpolation linéaire d'un point de contour sur une arête
+  function lerp(a, b, va, vb, iso) {
+    const d = (vb - va);
+    const m = Math.abs(d) < 1e-6 ? 0.5 : (iso - va) / d;
+    return [a[0] + (b[0] - a[0]) * m, a[1] + (b[1] - a[1]) * m];
+  }
+
+  function drawContours(iso, index) {
+    ctx.beginPath();
+    for (let j = 0; j < rows - 1; j++) {
+      for (let i = 0; i < cols - 1; i++) {
+        const x0 = i * CELL, y0 = j * CELL, x1 = x0 + CELL, y1 = y0 + CELL;
+        const tl = field[j * cols + i];
+        const tr = field[j * cols + i + 1];
+        const br = field[(j + 1) * cols + i + 1];
+        const bl = field[(j + 1) * cols + i];
+        let c = 0;
+        if (tl > iso) c |= 8;
+        if (tr > iso) c |= 4;
+        if (br > iso) c |= 2;
+        if (bl > iso) c |= 1;
+        if (c === 0 || c === 15) continue;
+
+        const T = [[x0, y0], [x1, y0]];
+        const R = [[x1, y0], [x1, y1]];
+        const B = [[x0, y1], [x1, y1]];
+        const L = [[x0, y0], [x0, y1]];
+        const pT = () => lerp(T[0], T[1], tl, tr, iso);
+        const pR = () => lerp(R[0], R[1], tr, br, iso);
+        const pB = () => lerp(B[0], B[1], bl, br, iso);
+        const pL = () => lerp(L[0], L[1], tl, bl, iso);
+
+        let segs = [];
+        switch (c) {
+          case 1: case 14: segs = [[pL(), pB()]]; break;
+          case 2: case 13: segs = [[pB(), pR()]]; break;
+          case 3: case 12: segs = [[pL(), pR()]]; break;
+          case 4: case 11: segs = [[pT(), pR()]]; break;
+          case 6: case 9:  segs = [[pT(), pB()]]; break;
+          case 7: case 8:  segs = [[pL(), pT()]]; break;
+          case 5:          segs = [[pL(), pT()], [pB(), pR()]]; break;
+          case 10:         segs = [[pL(), pB()], [pT(), pR()]]; break;
+        }
+        for (const s of segs) {
+          ctx.moveTo(s[0][0], s[0][1]);
+          ctx.lineTo(s[1][0], s[1][1]);
+        }
+      }
+    }
+    const major = index % 4 === 0;
+    ctx.lineWidth = major ? 1.5 : 0.8;
+    ctx.strokeStyle = `rgba(${major ? ROCK : STONE},${major ? 0.42 : 0.24})`;
+    ctx.stroke();
+  }
+
+  function drawGrid() {
+    ctx.save();
+    ctx.strokeStyle = 'rgba(90,58,35,0.10)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([2, 6]);
+    const step = 130;
+    for (let x = step; x < W; x += step) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+    for (let y = step; y < H; y += step) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+    ctx.restore();
+  }
+
+  // Repères de nivellement "+" sur les sommets
+  function drawBenchmarks() {
+    ctx.save();
+    ctx.strokeStyle = `rgba(${ROCK},0.55)`;
+    ctx.fillStyle = `rgba(${ROCK},0.7)`;
+    ctx.lineWidth = 1.2;
+    ctx.font = '9px "JetBrains Mono", monospace';
+    for (const p of PEAKS) {
+      if (p.amp < 0.9) continue;
+      const x = p.cx * W, y = p.cy * H, s = 5;
+      ctx.beginPath();
+      ctx.moveTo(x - s, y); ctx.lineTo(x + s, y);
+      ctx.moveTo(x, y - s); ctx.lineTo(x, y + s);
+      ctx.stroke();
+      // altitude échantillonnée à la position exacte de la croix
+      ctx.fillText(fieldToAlt(fieldValue(p.cx, p.cy)) + ' m', x + 8, y - 4);
+    }
+    ctx.restore();
+  }
+
+  const ISO = [];
+  for (let k = 0; k < 14; k++) ISO.push(0.18 + k * 0.12);
+
+  let t = 0, raf, last = 0;
+  function frame(now) {
+    raf = requestAnimationFrame(frame);
+    if (now - last < 33) return;     // ~30 fps
+    last = now;
+    t += 0.006;
+    ctx.clearRect(0, 0, W, H);
+    drawGrid();
+    computeField(t);
+    ISO.forEach((iso, i) => drawContours(iso, i));
+    drawBenchmarks();
+  }
+
+  function start() { seedPeaks(); resize(); cancelAnimationFrame(raf); raf = requestAnimationFrame(frame); }
+  window.addEventListener('resize', () => { resize(); });
+  // pause hors-écran pour économiser la batterie
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) cancelAnimationFrame(raf);
+    else raf = requestAnimationFrame(frame);
+  });
+  start();
+})();
+
+/* ================================================================
+   EN-TÊTE — défilé des sommets de France les plus proéminents
+   Source : Wikipédia « Liste des sommets de France les plus
+   proéminents » (proéminence ≥ 1000 m). Format : [nom, lat, lon, alt_m].
+   ================================================================ */
+(function summits() {
+  const S = [
+    ['Mont Blanc', 45.8328, 6.865, 4806],
+    ['Piton des Neiges', -21.0989, 55.4789, 3070],
+    ['Monte Cinto', 42.3797, 8.9456, 2706],
+    ['Mont Orohena', -17.6231, -149.4769, 2241],
+    ['Barre des Écrins', 44.9167, 6.3333, 4101],
+    ['Mont Ross', -49.6, 69.5, 1850],
+    ['Chamechaude', 45.2878, 5.7883, 2082],
+    ["Pointe d'Arcalod", 45.6819, 6.2283, 2217],
+    ['Pointe Percée', 45.9556, 6.5561, 2750],
+    ['Mont Panié', -20.5883, 164.7706, 1629],
+    ['Puy de Sancy', 45.5283, 2.8142, 1885],
+    ["Grande Tête de l'Obiou", 44.775, 5.8397, 2789],
+    ['La Tournette', 45.8272, 6.2864, 2350],
+    ['Taillefer', 45.0395, 5.9251, 2857],
+    ['Soufrière', 16.05, -61.67, 1467],
+    ["Aiguilles d'Arves", 45.1231, 6.3344, 3514],
+    ['Montagne Pelée', 14.8131, -61.1656, 1395],
+    ['Puigmal', 42.3833, 2.1168, 2910],
+    ['Grande Casse', 45.4053, 6.8275, 3855],
+    ['Mont Chaberton', 44.9647, 6.7528, 3131],
+    ['Mont Temetiu', -9.7972, -139.08, 1276],
+    ['Pic de Bure', 44.6269, 5.935, 2709],
+    ["Pique d'Estats", 42.6669, 1.3979, 3143],
+    ['Crêt de la Neige', 46.2725, 5.9436, 1720],
+    ['Le Môle', 46.1067, 6.455, 1863],
+    ['Mont Oave', -9.3917, -140.0783, 1232],
+    ['Mont Tekao', -8.8442, -140.1658, 1224],
+    ['Monte San Petrone', 42.3961, 9.3269, 1767],
+    ['Mont Tohiea', -17.5449, -149.8127, 1207],
+    ['Monte Renoso', 42.0583, 9.1336, 2352],
+    ['Dent Parrachée', 45.2917, 6.7497, 3695],
+    ['Pic Bayle', 45.1381, 6.1358, 3465],
+    ['Monte Rotondo', 42.2161, 9.0581, 2622],
+    ['Grand Veymont', 44.87, 5.5269, 2341],
+    ['Dent de Cons', 45.7296, 6.3513, 2063],
+    ['Mont Ventoux', 44.1667, 5.2833, 1910],
+    ['Mont Pourri', 45.5283, 6.86, 3779],
+    ['Mont Colombier', 45.6444, 6.1194, 2045],
+    ["Pic du Midi d'Ossau", 42.8061, -0.4181, 2884],
+    ["Roc d'Enfer", 46.1897, 6.6119, 2244],
+    ['Grand Ballon', 47.9008, 7.0981, 1424],
+    ['Aiguille de Scolette', 45.1598, 6.7682, 3506],
+    ['Mont Lachat', 45.9275, 6.3514, 2019],
+    ['Monte Astu', 42.5813, 9.21, 1535],
+    ['Cornettes de Bise', 46.3325, 6.7844, 2432],
+    ['Grand pic de Belledonne', 45.1711, 5.9917, 2977],
+    ['Mont Marion-Dufresne', -46.4164, 52.2569, 1050],
+    ['Montagne de Céüse', 44.5089, 5.9619, 2016],
+    ['Vignemale', 42.7739, -0.1475, 3298],
+    ['Le Roignais', 45.6431, 6.6886, 2995],
+    ['Tabor', 44.9833, 5.85, 2389],
+    ['Piton de la Fournaise', -21.2425, 55.7089, 2632],
+    ['Mont Temehani', -16.828, -151.452, 1017],
+    ['Pic de Rochebrune', 44.8225, 6.7872, 3320],
+    ['Pic de Soularac', 42.8178, 1.7817, 2368],
+    ['Pic Carlit', 42.5707, 1.9315, 2921],
+  ];
+
+  function fmtCoord(lat, lon) {
+    const ns = lat >= 0 ? 'N' : 'S';
+    const ew = lon >= 0 ? 'E' : 'O';   // O = Ouest (convention française)
+    return `${Math.abs(lat).toFixed(2)}°${ns} · ${Math.abs(lon).toFixed(2)}°${ew}`;
+  }
+  const fmtAlt = (m) => m.toLocaleString('fr-FR') + ' m';
+
+  const box = document.getElementById('summit-cycle');
+  const nameEl = document.getElementById('summit-name');
+  const coordEl = document.getElementById('summit-coord');
+  const altEl = document.getElementById('summit-alt');
+  if (!box) return;
+  let i = 0;
+  function show() {
+    const s = S[i];
+    box.style.opacity = '0';
+    setTimeout(() => {
+      nameEl.textContent = s[0].toUpperCase();
+      coordEl.textContent = fmtCoord(s[1], s[2]);
+      altEl.textContent = fmtAlt(s[3]);
+      box.style.opacity = '1';
+    }, 350);
+    i = (i + 1) % S.length;
+  }
+  show();
+  setInterval(show, 3800);
+})();
+
+/* ================================================================
+   API GITHUB — récupération dynamique des repos
+   ================================================================ */
+const GITHUB_USERNAME = 'Kazafk';
+
+const LANG_COLORS = {
+  JavaScript: '#f1e05a', TypeScript: '#3178c6', Python: '#3572A5',
+  HTML: '#e34c26', CSS: '#563d7c', Rust: '#dea584', Go: '#00ADD8',
+  'C#': '#178600', 'C++': '#f34b7d', Java: '#b07219', Ruby: '#701516',
+  PHP: '#4F5D95', Shell: '#89e051', Vue: '#41b883', Svelte: '#ff3e00',
+  COBOL: '#005ca5', Jupyter: '#DA5B0B', 'Jupyter Notebook': '#DA5B0B',
+};
+function langColor(l) { return LANG_COLORS[l] || '#B5532A'; }
+
+const REPO_META = {
+  'Kazafk.github.io': { desc: 'Portfolio GitHub — relevé topographique des projets, courbes de niveau animées en canvas + API GitHub.' },
+  'cobol-cartography': { desc: 'Extension VS Code : cartographie COBOL par IA — graphe de dépendances, analyse statique, RAG.' },
+  'sca-water-map': { desc: 'Cartographie interactive des zones hydriques — visualisation géographique en JavaScript.' },
+  'mmia4': { desc: "Portail d'informations MM — documentation et ressources partagées." },
+  'animated-octo-happiness': { desc: 'Animations TypeScript — expériences interactives et visuelles.' },
+};
+function getRepoDesc(repo) { return REPO_META[repo.name]?.desc || repo.description || null; }
+
+function timeAgo(dateStr) {
+  const date = new Date(dateStr);
+  if (isNaN(date.getTime())) return '?';
+  const days = Math.floor((Date.now() - date) / 86400000);
+  if (days <= 0) return "aujourd'hui";
+  if (days === 1) return 'hier';
+  if (days < 30) return `il y a ${days} j`;
+  if (days < 365) return `il y a ${Math.floor(days / 30)} mois`;
+  return `il y a ${Math.floor(days / 365)} an${Math.floor(days / 365) > 1 ? 's' : ''}`;
+}
+
+function safeUrl(raw) {
+  try { const u = new URL(raw); return (u.protocol === 'https:' || u.protocol === 'http:') ? u.href : null; }
+  catch { return null; }
+}
+function escapeHTML(str) { const d = document.createElement('div'); d.textContent = str ?? ''; return d.innerHTML; }
+
+async function fetchRepos() {
+  const res = await fetch(
+    `https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=100&type=public`
+  );
+  if (!res.ok) throw new Error(`GitHub API error: ${res.status}`);
+  const repos = await res.json();
+  return repos.filter(r => !r.fork)
+    .sort((a, b) => (b.stargazers_count - a.stargazers_count) || (new Date(b.updated_at) - new Date(a.updated_at)));
+}
+
+function renderCards(repos) {
+  if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.getAll().forEach(t => t.kill());
+  const grid = document.getElementById('cards-grid');
+  grid.innerHTML = '';
+
+  if (!repos.length) {
+    grid.innerHTML = '<p class="empty-msg">&#9650; Aucun relevé disponible pour le moment.</p>';
+    return;
+  }
+
+  repos.forEach((repo, n) => {
+    const color = langColor(repo.language);
+    const desc = getRepoDesc(repo);
+    const ghUrl = safeUrl(repo.html_url) || '#';
+    const demoRaw = repo.homepage || (repo.has_pages ? `https://${GITHUB_USERNAME.toLowerCase()}.github.io/${repo.name}` : null);
+    const demoUrl = demoRaw ? safeUrl(demoRaw) : null;
+    const plot = String(n + 1).padStart(2, '0');
+
+    const wrap = document.createElement('div');
+    wrap.className = 'card-wrap';
+    wrap.innerHTML = `
+      <article class="card">
+        <div class="card-stripe" style="background:linear-gradient(90deg, var(--terracotta), ${color})"></div>
+        <div class="card-body">
+          <div class="card-plot">Parcelle ${plot} · ${repo.language ? escapeHTML(repo.language) : 'N/D'}</div>
+          <h3 class="card-title">${escapeHTML(repo.name)}</h3>
+          <p class="card-desc ${desc ? '' : 'empty'}">${desc ? escapeHTML(desc) : 'Sans description.'}</p>
+          ${(repo.topics && repo.topics.length) ? `<div class="card-topics">${repo.topics.slice(0,4).map(tp => `<span class="topic-chip">${escapeHTML(tp)}</span>`).join('')}</div>` : ''}
+          <div class="card-meta">
+            ${repo.language ? `<span class="lang-badge"><span class="lang-dot" style="background:${color}"></span>${escapeHTML(repo.language)}</span>` : ''}
+            <span class="card-stat">★ <b>${repo.stargazers_count}</b></span>
+            <span class="card-stat">⑂ <b>${repo.forks_count}</b></span>
+            <span class="card-stat">${timeAgo(repo.updated_at)}</span>
+          </div>
+          <div class="card-links">
+            <a class="card-link primary" href="${ghUrl}" target="_blank" rel="noopener noreferrer">Code →</a>
+            ${demoUrl ? `<a class="card-link ghost" href="${demoUrl}" target="_blank" rel="noopener noreferrer">Démo ↗</a>` : ''}
+          </div>
+        </div>
+        <div class="card-glare"></div>
+      </article>
+    `;
+    grid.appendChild(wrap);
+  });
+
+  attachTilt();
+
+  if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+    document.querySelectorAll('.card-wrap').forEach((wrap, i) => {
+      gsap.fromTo(wrap,
+        { opacity: 0, y: 34 },
+        { opacity: 1, y: 0, duration: 0.55, delay: (i % 2) * 0.07, ease: 'power2.out',
+          scrollTrigger: { trigger: wrap, start: 'top 92%' } });
+    });
+  }
+}
+
+/* ── TILT / PARALLAX au survol ── */
+function attachTilt() {
+  const supportsHover = window.matchMedia('(hover: hover)').matches;
+  document.querySelectorAll('.card').forEach(card => {
+    if (card.dataset.tilt) return;
+    card.dataset.tilt = '1';
+    const glare = card.querySelector('.card-glare');
+    const MAX = 9;
+
+    if (supportsHover) {
+      card.addEventListener('mousemove', e => {
+        const r = card.getBoundingClientRect();
+        const dx = (e.clientX - r.left - r.width / 2) / (r.width / 2);
+        const dy = (e.clientY - r.top - r.height / 2) / (r.height / 2);
+        if (typeof gsap !== 'undefined') {
+          gsap.to(card, { rotateY: dx * MAX, rotateX: -dy * MAX, transformPerspective: 900,
+            duration: 0.2, ease: 'power2.out', overwrite: 'auto' });
+        }
+        glare.style.background = `radial-gradient(circle at ${(dx+1)*50}% ${(dy+1)*50}%, rgba(255,247,233,0.45) 0%, transparent 60%)`;
+        glare.style.opacity = '1';
+      });
+      card.addEventListener('mouseleave', () => {
+        if (typeof gsap !== 'undefined') {
+          gsap.to(card, { rotateY: 0, rotateX: 0, duration: 0.9, ease: 'elastic.out(1, 0.5)', overwrite: 'auto' });
+        }
+        glare.style.opacity = '0';
+      });
+    }
+  });
+
+  // inclinaison gyroscope (mobile)
+  if (window.DeviceOrientationEvent && !window.__gyroBound) {
+    window.__gyroBound = true;
+    window.addEventListener('deviceorientation', e => {
+      if (e.gamma === null) return;
+      const cards = document.querySelectorAll('.card');
+      const x = Math.max(-9, Math.min(9, (e.gamma || 0) / 3));
+      const y = Math.max(-9, Math.min(9, ((e.beta || 45) - 45) / 3));
+      cards.forEach(card => {
+        if (typeof gsap !== 'undefined') gsap.to(card, { rotateY: x, rotateX: -y, duration: 0.4, ease: 'power2.out', overwrite: 'auto' });
+      });
+    });
+  }
+}
+
+/* ── Bootstrap ── */
+if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') gsap.registerPlugin(ScrollTrigger);
+
+fetchRepos().then(repos => {
+  document.getElementById('stat-repos').textContent = repos.length;
+  document.getElementById('stat-stars').textContent = repos.reduce((s, r) => s + r.stargazers_count, 0);
+  const langs = new Set(repos.map(r => r.language).filter(Boolean));
+  document.getElementById('stat-langs').textContent = langs.size;
+  document.getElementById('projects-sub').textContent = `${repos.length} parcelles relevées`;
+  renderCards(repos);
+}).catch(err => {
+  console.error('Fetch error:', err);
+  document.getElementById('projects-sub').textContent = 'Erreur de chargement';
+  const grid = document.getElementById('cards-grid');
+  if (grid) grid.innerHTML = '<p class="empty-msg">&#9650; Erreur de chargement du relevé. Vérifiez votre connexion puis rechargez.</p>';
+});
+</script>
+</body>
+</html>
