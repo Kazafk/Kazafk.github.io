@@ -276,7 +276,7 @@ body::after {
 }
 
 /* ── CARD (tuile de relevé) ── */
-.card-wrap { perspective: 900px; }
+.card-wrap { }
 
 .card {
   position: relative;
@@ -289,11 +289,13 @@ body::after {
   border: 1.5px solid var(--sand-line);
   box-shadow: 0 2px 0 var(--sand-line), 0 14px 26px -18px var(--shadow);
   overflow: hidden;
-  transform-style: preserve-3d;
   will-change: transform;
-  transition: box-shadow 0.25s;
+  transition: box-shadow 0.3s, transform 0.3s;
 }
-.card:hover { box-shadow: 0 2px 0 var(--terra-soft), 0 22px 40px -20px var(--shadow); }
+.card:hover {
+  box-shadow: 0 2px 0 var(--terra-soft), 0 22px 40px -20px var(--shadow);
+  transform: translateY(-4px);
+}
 
 /* mini contours décoratifs en coin */
 .card::before {
@@ -921,49 +923,26 @@ function renderCards(repos) {
   }
 }
 
-/* ── TILT / PARALLAX au survol ── */
+/* ── REFLET LUMINEUX au survol (remplace le tilt 3D) ── */
 function attachTilt() {
   const supportsHover = window.matchMedia('(hover: hover)').matches;
+  if (!supportsHover) return;
   document.querySelectorAll('.card').forEach(card => {
     if (card.dataset.tilt) return;
     card.dataset.tilt = '1';
     const glare = card.querySelector('.card-glare');
-    const MAX = 9;
 
-    if (supportsHover) {
-      card.addEventListener('mousemove', e => {
-        const r = card.getBoundingClientRect();
-        const dx = (e.clientX - r.left - r.width / 2) / (r.width / 2);
-        const dy = (e.clientY - r.top - r.height / 2) / (r.height / 2);
-        if (typeof gsap !== 'undefined') {
-          gsap.to(card, { rotateY: dx * MAX, rotateX: -dy * MAX, transformPerspective: 900,
-            duration: 0.2, ease: 'power2.out', overwrite: 'auto' });
-        }
-        glare.style.background = `radial-gradient(circle at ${(dx+1)*50}% ${(dy+1)*50}%, rgba(255,247,233,0.45) 0%, transparent 60%)`;
-        glare.style.opacity = '1';
-      });
-      card.addEventListener('mouseleave', () => {
-        if (typeof gsap !== 'undefined') {
-          gsap.to(card, { rotateY: 0, rotateX: 0, duration: 0.9, ease: 'elastic.out(1, 0.5)', overwrite: 'auto' });
-        }
-        glare.style.opacity = '0';
-      });
-    }
-  });
-
-  // inclinaison gyroscope (mobile)
-  if (window.DeviceOrientationEvent && !window.__gyroBound) {
-    window.__gyroBound = true;
-    window.addEventListener('deviceorientation', e => {
-      if (e.gamma === null) return;
-      const cards = document.querySelectorAll('.card');
-      const x = Math.max(-9, Math.min(9, (e.gamma || 0) / 3));
-      const y = Math.max(-9, Math.min(9, ((e.beta || 45) - 45) / 3));
-      cards.forEach(card => {
-        if (typeof gsap !== 'undefined') gsap.to(card, { rotateY: x, rotateX: -y, duration: 0.4, ease: 'power2.out', overwrite: 'auto' });
-      });
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      const x = ((e.clientX - r.left) / r.width) * 100;
+      const y = ((e.clientY - r.top) / r.height) * 100;
+      glare.style.background = `radial-gradient(circle at ${x}% ${y}%, rgba(255,247,233,0.5) 0%, transparent 65%)`;
+      glare.style.opacity = '1';
     });
-  }
+    card.addEventListener('mouseleave', () => {
+      glare.style.opacity = '0';
+    });
+  });
 }
 
 /* ── Bootstrap ── */
